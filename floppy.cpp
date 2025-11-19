@@ -1,5 +1,7 @@
 #include "raylib.h"
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -29,48 +31,15 @@ public:
         position = {100, ScreenHeight / 2.0f};
     }
 
-    Vector2 GetPosition()
-    {
-        return position;
-    }
-
-    float GetVelocity()
-    {
-        return velocity;
-    }
-
-    float GetRadius()
-    {
-        return radius;
-    }
-
-    void SetPosition(Vector2 pos)
-    {
-        position = pos;
-    }
-
-    void SetVelocity(float vel)
-    {
-        velocity = vel;
-    }
-
-    void Jump()
-    {
-        velocity = JumpStrength;
-    }
-
-    void Update(float dt)
-    {
-        velocity += Gravity * dt;
-        position.y += velocity * dt;
-    }
+    Vector2 GetPosition() { return position; }
+    void Update(float dt) { velocity += Gravity * dt; position.y += velocity * dt; }
+    void Jump() { velocity = JumpStrength; }
 
     void Draw() const
     {
         DrawCircleV(position, radius, color);
         DrawCircle(position.x + 10, position.y - 5, 5, WHITE);
         DrawCircle(position.x + 12, position.y - 5, 2, BLACK);
-        // Draw a beak
         Vector2 v1 = {position.x + 10, position.y + 5};
         Vector2 v2 = {position.x + 25, position.y + 10};
         Vector2 v3 = {position.x + 10, position.y + 15};
@@ -82,7 +51,7 @@ class Pipe
 {
 private:
     float x;
-    float gapY; // The center Y position of the gap
+    float gapY;
     bool passed;
 
 public:
@@ -92,60 +61,41 @@ public:
         gapY = gap;
         passed = false;
     }
-
-    float GetX()
-    {
-        return x;
-    }
-
-    float GetGapY()
-    {
-        return gapY;
-    }
-
-    bool IsPassed()
-    {
-        return passed;
-    }
-
-    void SetX(float xPos)
-    {
-        x = xPos;
-    }
-    void SetGapY(float gap)
-    {
-        gapY = gap;
-    }
-    void SetPassed(bool p)
-    {
-        passed = p;
-    }
-
-    void Update(float dt)
-    {
-        x -= PipeSpeed * dt;
-    }
-
+    void Update(float dt) { x -= PipeSpeed * dt; }
     void Draw() const
     {
-        // Top Pipe
         Rectangle topRec = {x, 0, (float)PipeWidth, gapY - (PipeGap / 2)};
         DrawRectangleRec(topRec, GREEN);
-        DrawRectangleLinesEx(topRec, 3, DARKGREEN); // Outline
-
-        // Bottom Pipe
+        DrawRectangleLinesEx(topRec, 3, DARKGREEN);
         Rectangle bottomRec = {x, gapY + (PipeGap / 2), (float)PipeWidth, (float)ScreenHeight - (gapY + (PipeGap / 2))};
         DrawRectangleRec(bottomRec, GREEN);
-        DrawRectangleLinesEx(bottomRec, 3, DARKGREEN); // Outline
+        DrawRectangleLinesEx(bottomRec, 3, DARKGREEN);
     }
 };
 
 int main()
 {
-    InitWindow(ScreenWidth, ScreenHeight, "Raylib - Flappy Bird Clone");
+    InitWindow(ScreenWidth, ScreenHeight, "Commit 1: Game Loop");
     SetTargetFPS(60);
     srand(time(NULL));
 
     Bird bird(20, GOLD);
+
+    // Main game loop
+    while (!WindowShouldClose())
+    {
+        // Drawing
+        BeginDrawing();
+        ClearBackground(SKYBLUE);
+
+        bird.Draw();
+
+        // Draw Ground
+        DrawRectangle(0, ScreenHeight - 20, ScreenWidth, 20, DARKBROWN);
+
+        EndDrawing();
+    }
+
+    CloseWindow();
     return 0;
 }
