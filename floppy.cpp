@@ -66,7 +66,7 @@ public:
 
 int main()
 {
-    InitWindow(ScreenWidth, ScreenHeight, "Commit 2: Bird Physics");
+    InitWindow(ScreenWidth, ScreenHeight, "Floppy Bird");
     SetTargetFPS(60);
     srand(time(NULL));
 
