@@ -10,7 +10,7 @@ const int ScreenHeight = 450;
 const int Gravity = 600;
 const int JumpStrength = -350;
 const int PipeSpeed = 200;
-const int PipeSpawnX = 300; // Distance between pipes
+const int PipeSpawnX = 300;
 const int PipeWidth = 80;
 const int PipeGap = 170;
 
@@ -49,18 +49,9 @@ public:
 
 class Pipe
 {
-private:
-    float x;
-    float gapY;
-    bool passed;
-
 public:
-    Pipe(float xPos = ScreenWidth, float gap = ScreenHeight / 2.0f)
-    {
-        x = xPos;
-        gapY = gap;
-        passed = false;
-    }
+    float x, gapY; bool passed;
+    Pipe(float xPos, float gap) : x(xPos), gapY(gap), passed(false) {}
     void Update(float dt) { x -= PipeSpeed * dt; }
     void Draw() const
     {
@@ -75,24 +66,30 @@ public:
 
 int main()
 {
-    InitWindow(ScreenWidth, ScreenHeight, "Commit 1: Game Loop");
+    InitWindow(ScreenWidth, ScreenHeight, "Commit 2: Bird Physics");
     SetTargetFPS(60);
     srand(time(NULL));
 
     Bird bird(20, GOLD);
 
-    // Main game loop
     while (!WindowShouldClose())
     {
+        float dt = GetFrameTime();
+
+        // Handle player input
+        if (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            bird.Jump();
+        }
+        // Update bird physics
+        bird.Update(dt);
+
+
         // Drawing
         BeginDrawing();
         ClearBackground(SKYBLUE);
-
         bird.Draw();
-
-        // Draw Ground
         DrawRectangle(0, ScreenHeight - 20, ScreenWidth, 20, DARKBROWN);
-
         EndDrawing();
     }
 
