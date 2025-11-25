@@ -1,3 +1,4 @@
+
 #include "raylib.h"
 #include <vector>
 #include <cstdlib>
@@ -16,34 +17,16 @@ const int PipeGap = 170;
 
 class Bird
 {
-private:
-    Vector2 position;
-    float velocity;
-    float radius;
-    Color color;
-
 public:
-    Bird(float r = 20, Color c = GOLD)
-    {
-        radius = r;
-        color = c;
-        velocity = 0;
-        position = {100, ScreenHeight / 2.0f};
-    }
-
-    Vector2 GetPosition() { return position; }
+    Vector2 position; float velocity; float radius;
+    Bird(float r = 20, Color c = GOLD) { radius = r; velocity = 0; position = {100, ScreenHeight / 2.0f}; }
     void Update(float dt) { velocity += Gravity * dt; position.y += velocity * dt; }
     void Jump() { velocity = JumpStrength; }
-
-    void Draw() const
-    {
-        DrawCircleV(position, radius, color);
+    void Draw() const {
+        DrawCircleV(position, radius, GOLD);
         DrawCircle(position.x + 10, position.y - 5, 5, WHITE);
         DrawCircle(position.x + 12, position.y - 5, 2, BLACK);
-        Vector2 v1 = {position.x + 10, position.y + 5};
-        Vector2 v2 = {position.x + 25, position.y + 10};
-        Vector2 v3 = {position.x + 10, position.y + 15};
-        DrawTriangle(v1, v2, v3, ORANGE);
+        DrawTriangle({position.x + 10, position.y + 5}, {position.x + 25, position.y + 10}, {position.x + 10, position.y + 15}, ORANGE);
     }
 };
 
@@ -53,8 +36,7 @@ public:
     float x, gapY; bool passed;
     Pipe(float xPos, float gap) : x(xPos), gapY(gap), passed(false) {}
     void Update(float dt) { x -= PipeSpeed * dt; }
-    void Draw() const
-    {
+    void Draw() const {
         Rectangle topRec = {x, 0, (float)PipeWidth, gapY - (PipeGap / 2)};
         DrawRectangleRec(topRec, GREEN);
         DrawRectangleLinesEx(topRec, 3, DARKGREEN);
@@ -66,28 +48,42 @@ public:
 
 int main()
 {
-    InitWindow(ScreenWidth, ScreenHeight, "Floppy Bird");
+    InitWindow(ScreenWidth, ScreenHeight, "Commit 3: Pipe Spawning");
     SetTargetFPS(60);
     srand(time(NULL));
 
-    Bird bird(20, GOLD);
+    Bird bird;
+    vector<Pipe> pipes;
+    pipes.push_back(Pipe(ScreenWidth, rand() % (ScreenHeight - 250) + 125));
 
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
 
-        // Handle player input
-        if (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            bird.Jump();
-        }
-        // Update bird physics
+        if (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) bird.Jump();
         bird.Update(dt);
 
+        // Pipe Spawning
+        if (pipes.empty() || (ScreenWidth - pipes.back().x) >= PipeSpawnX)
+        {
+            pipes.push_back(Pipe(ScreenWidth, rand() % (ScreenHeight - 250) + 125));
+        }
 
-        // Drawing
+        // Update Pipes
+        for (auto &pipe : pipes)
+        {
+            pipe.Update(dt);
+        }
+
+        // Remove off-screen pipes
+        if (!pipes.empty() && pipes.front().x < -PipeWidth)
+        {
+            pipes.erase(pipes.begin());
+        }
+
         BeginDrawing();
         ClearBackground(SKYBLUE);
+        for (auto &pipe : pipes) pipe.Draw();
         bird.Draw();
         DrawRectangle(0, ScreenHeight - 20, ScreenWidth, 20, DARKBROWN);
         EndDrawing();
@@ -96,3 +92,4 @@ int main()
     CloseWindow();
     return 0;
 }
+
