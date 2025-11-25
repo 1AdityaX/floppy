@@ -53,7 +53,7 @@ void ResetGame(Bird &bird, vector<Pipe> &pipes, int &score, bool &gameOver) {
 }
 
 int main() {
-    InitWindow(ScreenWidth, ScreenHeight, “Floppy”);
+    InitWindow(ScreenWidth, ScreenHeight, "Floppy");
     SetTargetFPS(60);
     srand(time(NULL));
 
