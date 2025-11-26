@@ -16,3 +16,7 @@ compile command
 ```
 g++ floppy.cpp -I/opt/homebrew/include -L/opt/homebrew/lib -lraylib
 ```
+or
+```
+g++ floppy.cpp -std=c++17 -I/opt/homebrew/include -L/opt/homebrew/lib -lraylib -o floppy
+```
